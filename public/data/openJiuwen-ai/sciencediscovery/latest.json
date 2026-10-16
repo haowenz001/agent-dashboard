@@ -1,0 +1,54 @@
+{
+  "generatedAt": "2026-10-16T07:28:08.456Z",
+  "repo": {
+    "stars": 165,
+    "forks": 32,
+    "watchers": 1,
+    "openIssuesAndPrs": 143
+  },
+  "contributors": {
+    "total": 20,
+    "activeLast30d": 16,
+    "newLast30d": 14,
+    "composition": {
+      "internal": 16,
+      "external": 4,
+      "unknown": 0
+    }
+  },
+  "pulls": {
+    "total": 202,
+    "open": 33,
+    "merged": 153,
+    "closedUnmerged": 16,
+    "composition": {
+      "internal": 153,
+      "external": 3,
+      "unknown": 46
+    }
+  },
+  "issues": {
+    "total": 147,
+    "open": 110,
+    "closed": 37,
+    "composition": {
+      "internal": 143,
+      "external": 2,
+      "unknown": 2
+    },
+    "longOpen": {
+      "thresholdDays": 30,
+      "count": 1,
+      "items": [
+        {
+          "number": 22,
+          "title": "[RFC] Make ScienceDiscovery easy to understand, start, and use",
+          "author": "hsliuustc0106",
+          "createdAt": "2026-09-15T09:57:55Z",
+          "waitingHours": 741.5037377777778,
+          "url": "https://github.com/openJiuwen-ai/sciencediscovery/issues/22"
+        }
+      ]
+    }
+  }
+}

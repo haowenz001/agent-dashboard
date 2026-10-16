@@ -1,0 +1,34 @@
+{
+  "internalContributors": {
+    "openJiuwen-ai/sciencediscovery": [
+      "Birfy",
+      "claude",
+      "cyanneko",
+      "freeeyes",
+      "functoreality",
+      "HongyeZhou",
+      "hsliuustc0106",
+      "ink999107",
+      "qijiaxi0813",
+      "Thibaultjaigu",
+      "wyhohyw",
+      "ybzhouni",
+      "YisiLuo",
+      "yuanzhou75",
+      "zhaozhaozz",
+      "zy95-12"
+    ],
+    "openJiuwen-ai/DigitalMate": []
+  },
+  "bots": [
+    "dependabot[bot]",
+    "github-actions[bot]",
+    "renovate[bot]",
+    "codecov[bot]",
+    "copilot[bot]",
+    "openjiuwen-sync-bot[bot]",
+    "openjiuwen-release-bot[bot]",
+    "openjiuwen-collaboration-bot[bot]"
+  ],
+  "longOpenIssueDays": 30
+}

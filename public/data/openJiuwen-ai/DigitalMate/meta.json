@@ -1,0 +1,44 @@
+{
+  "schemaVersion": 1,
+  "repo": {
+    "owner": "openJiuwen-ai",
+    "name": "DigitalMate",
+    "fullName": "openJiuwen-ai/DigitalMate",
+    "htmlUrl": "https://github.com/openJiuwen-ai/DigitalMate",
+    "description": null,
+    "homepage": null,
+    "defaultBranch": "main",
+    "createdAt": "",
+    "license": null,
+    "topics": []
+  },
+  "monitoringStart": "2026-10-16T07:28:08.456Z",
+  "lastSuccessAt": null,
+  "lastAttemptAt": "2026-10-16T07:28:08.456Z",
+  "status": "failed",
+  "errors": [
+    {
+      "at": "2026-10-16T07:28:08.456Z",
+      "scope": "repo",
+      "message": "HTTP 404 for https://api.github.com/repos/openJiuwen-ai/DigitalMate: {\"message\":\"Not Found\",\"documentation_url\":\"https://docs.github.com/rest/repos/repos#get-a-repository\",\"status\":\"404\"}"
+    },
+    {
+      "at": "2026-10-16T07:28:08.456Z",
+      "scope": "contributors",
+      "message": "HTTP 404 for https://api.github.com/repos/openJiuwen-ai/DigitalMate/contributors?anon=0&per_page=100: {\"message\":\"Not Found\",\"documentation_url\":\"https://docs.github.com/rest/repos/repos#list-repository-contributors\",\"status\":\"404\"}"
+    },
+    {
+      "at": "2026-10-16T07:28:08.456Z",
+      "scope": "pulls",
+      "message": "HTTP 404 for https://api.github.com/repos/openJiuwen-ai/DigitalMate/pulls?state=all&sort=created&direction=desc&per_page=100: {\"message\":\"Not Found\",\"documentation_url\":\"https://docs.github.com/rest/pulls/pulls#list-pull-requests\",\"status\":\"404\"}"
+    },
+    {
+      "at": "2026-10-16T07:28:08.456Z",
+      "scope": "issues",
+      "message": "HTTP 404 for https://api.github.com/repos/openJiuwen-ai/DigitalMate/issues?state=all&sort=created&direction=desc&per_page=100: {\"message\":\"Not Found\",\"documentation_url\":\"https://docs.github.com/rest/issues/issues#list-repository-issues\",\"status\":\"404\"}"
+    }
+  ],
+  "tokenConfigured": false,
+  "historyComplete": false,
+  "notes": []
+}

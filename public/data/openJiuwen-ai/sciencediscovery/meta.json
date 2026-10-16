@@ -1,0 +1,23 @@
+{
+  "schemaVersion": 1,
+  "repo": {
+    "owner": "openJiuwen-ai",
+    "name": "sciencediscovery",
+    "fullName": "openJiuwen-ai/sciencediscovery",
+    "htmlUrl": "https://github.com/openJiuwen-ai/sciencediscovery",
+    "description": "ScienceDiscovery is an all‑in‑one agentic workbench built specifically for scientific research.",
+    "homepage": "",
+    "defaultBranch": "main",
+    "createdAt": "2026-08-14T09:38:06Z",
+    "license": "Apache-2.0",
+    "topics": []
+  },
+  "monitoringStart": "2026-10-16T07:28:08.456Z",
+  "lastSuccessAt": "2026-10-16T07:28:08.456Z",
+  "lastAttemptAt": "2026-10-16T07:28:08.456Z",
+  "status": "ok",
+  "errors": [],
+  "tokenConfigured": false,
+  "historyComplete": false,
+  "notes": []
+}

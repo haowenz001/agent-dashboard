@@ -7,7 +7,10 @@ import { tanstackRouter } from '@tanstack/router-plugin/vite'
 import { playwright } from '@vitest/browser-playwright'
 
 // https://vite.dev/config/
+// Relative base keeps asset/data URLs portable across GitHub Pages
+// project pages (/<repo>/) and any other static host.
 export default defineConfig({
+  base: process.env.VITE_BASE ?? './',
   plugins: [
     tanstackRouter({
       target: 'react',

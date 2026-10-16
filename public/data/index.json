@@ -1,0 +1,21 @@
+{
+  "generatedAt": "2026-10-16T07:28:22.659Z",
+  "repos": [
+    {
+      "owner": "openJiuwen-ai",
+      "name": "sciencediscovery",
+      "fullName": "openJiuwen-ai/sciencediscovery",
+      "htmlUrl": "https://github.com/openJiuwen-ai/sciencediscovery",
+      "description": "ScienceDiscovery is an all‑in‑one agentic workbench built specifically for scientific research.",
+      "defaultBranch": "main"
+    },
+    {
+      "owner": "openJiuwen-ai",
+      "name": "DigitalMate",
+      "fullName": "openJiuwen-ai/DigitalMate",
+      "htmlUrl": "https://github.com/openJiuwen-ai/DigitalMate",
+      "description": null,
+      "defaultBranch": "main"
+    }
+  ]
+}
