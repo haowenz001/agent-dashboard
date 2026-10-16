@@ -101,6 +101,8 @@ const DICT = {
   'gate.col.release': { zh: '发布', en: 'Release' },
   'gate.col.coverage': { zh: '覆盖率', en: 'Coverage' },
   'gate.live': { zh: '实时 · 30s', en: 'Live · 30s' },
+  'gate.branches': { zh: '分支', en: 'Branches' },
+  'gate.switchBranch': { zh: '切换分支', en: 'Switch branch' },
   'gate.synced': {
     zh: '数据同步自 GitHub · 2 分钟前',
     en: 'Synced from GitHub · 2 min ago',

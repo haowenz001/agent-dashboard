@@ -1,6 +1,7 @@
 /**
  * AgentGate · gate domain types, category metadata and demo data.
- * All numbers mirror the approved design mock (Gate Overview, 12 repos).
+ * Numbers are design-mock placeholders until CI pipelines publish real
+ * per-branch gate results.
  */
 
 export type GateCategory = 'build' | 'ready' | 'merge' | 'daily' | 'release'
@@ -18,15 +19,22 @@ export interface RepoCategoryStat {
   health: GateHealth
 }
 
-export interface GateRepo {
-  id: string
+/** Gate metrics for one branch of a repository. */
+export interface RepoBranchStat {
   name: string
-  owner: string
-  /** Status of the repo's most recent gate run. */
   gateStatus: GateRunStatus
   /** UT coverage %, red below the 75% threshold. */
   coverage: number
   stats: RepoCategoryStat[]
+}
+
+export interface GateRepo {
+  id: string
+  name: string
+  owner: string
+  /** Branch shown by default (first entry of branchData). */
+  defaultBranch: string
+  branchData: RepoBranchStat[]
 }
 
 export interface GateCategoryMeta {
@@ -103,42 +111,72 @@ function stat(
   }
 }
 
-/**
- * Monitored repositories. Gate numbers are design-mock placeholders until the
- * CI pipelines publish real gate results.
- */
+function branch(
+  name: string,
+  gateStatus: GateRunStatus,
+  coverage: number,
+  stats: RepoCategoryStat[]
+): RepoBranchStat {
+  return { name, gateStatus, coverage, stats }
+}
+
 export const GATE_REPOS: GateRepo[] = [
   {
     id: 'sciencediscovery',
     name: 'sciencediscovery',
     owner: 'openJiuwen-ai',
-    gateStatus: 'failed',
-    coverage: 71.2,
-    stats: [
-      stat('build', 96.2, 492, 342),
-      stat('ready', 93.8, 1300, 298),
-      stat('merge', 88.6, 1565, 164),
-      stat('daily', 85.1, 10260, 32, true),
-      stat('release', 100, 18720, 4),
+    defaultBranch: 'main',
+    branchData: [
+      branch('main', 'failed', 71.2, [
+        stat('build', 96.2, 492, 342),
+        stat('ready', 93.8, 1300, 298),
+        stat('merge', 88.6, 1565, 164),
+        stat('daily', 85.1, 10260, 32, true),
+        stat('release', 100, 18720, 4),
+      ]),
+      branch('release/v1.4', 'passed', 78.6, [
+        stat('build', 97.8, 505, 128),
+        stat('ready', 96.1, 1265, 96),
+        stat('merge', 92.4, 1502, 48),
+        stat('daily', 88.9, 9980, 12),
+        stat('release', 96.7, 17600, 2),
+      ]),
+      branch('feat/mcp-tools', 'running', 69.8, [
+        stat('build', 91.2, 640, 87),
+        stat('ready', 84.5, 1420, 41),
+        stat('merge', 76.9, 1810, 12),
+      ]),
     ],
   },
   {
     id: 'digitalmate',
     name: 'DigitalMate',
     owner: 'openJiuwen-ai',
-    gateStatus: 'passed',
-    coverage: 82.4,
-    stats: [
-      stat('build', 98.2, 460, 351),
-      stat('ready', 96.5, 1220, 305),
-      stat('merge', 91.2, 1490, 171),
-      stat('daily', 88.4, 9800, 33),
-      stat('release', 100, 17600, 5),
+    defaultBranch: 'main',
+    branchData: [
+      branch('main', 'passed', 82.4, [
+        stat('build', 98.2, 460, 351),
+        stat('ready', 96.5, 1220, 305),
+        stat('merge', 91.2, 1490, 171),
+        stat('daily', 88.4, 9800, 33),
+        stat('release', 100, 17600, 5),
+      ]),
+      branch('develop', 'passed', 80.9, [
+        stat('build', 97.1, 470, 210),
+        stat('ready', 94.8, 1240, 168),
+        stat('merge', 89.3, 1585, 92),
+        stat('daily', 86.2, 10150, 18),
+      ]),
+      branch('feat/data-pipeline', 'failed', 72.3, [
+        stat('build', 89.4, 610, 76),
+        stat('ready', 82.7, 1390, 33),
+        stat('merge', 74.6, 1755, 9),
+      ]),
     ],
   },
 ]
 
-export function countReposByStatus(repos: GateRepo[]) {
+export function countReposByStatus(repos: { gateStatus: GateRunStatus }[]) {
   const counts = { passed: 0, failed: 0, running: 0 }
   for (const repo of repos) counts[repo.gateStatus] += 1
   return counts

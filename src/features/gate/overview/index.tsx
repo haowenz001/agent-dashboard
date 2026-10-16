@@ -1,5 +1,5 @@
 import { useMemo } from 'react'
-import { GATE_REPOS, countReposByStatus } from '@/features/gate/data/gate'
+import { GATE_REPOS } from '@/features/gate/data/gate'
 import { RepoGateTable } from '@/features/gate/overview/repo-gate-table'
 import { useGateSearch } from '@/features/gate/stores/gate-search'
 import { useLang } from '@/lib/i18n'
@@ -16,11 +16,6 @@ export function GateOverview() {
     )
   }, [query])
 
-  const visibleCounts = useMemo(
-    () => countReposByStatus(visibleRepos),
-    [visibleRepos]
-  )
-
   return (
     <div className='flex flex-col gap-5'>
       <div>
@@ -30,7 +25,7 @@ export function GateOverview() {
         <p className='mt-1 text-sm text-gate-dim'>{t('gate.subtitle')}</p>
       </div>
 
-      <RepoGateTable repos={visibleRepos} statusCounts={visibleCounts} />
+      <RepoGateTable repos={visibleRepos} />
     </div>
   )
 }

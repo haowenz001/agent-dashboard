@@ -1,32 +1,38 @@
 import { useMemo, useState } from 'react'
-import { ArrowDown, ArrowUp, SearchX } from 'lucide-react'
+import {
+  ArrowDown,
+  ArrowUp,
+  Check,
+  ChevronDown,
+  GitBranch,
+  SearchX,
+} from 'lucide-react'
 import { cn } from '@/lib/utils'
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu'
 import { TONE_BG, TONE_TEXT } from '@/features/gate/components/gate-styles'
 import {
   COVERAGE_THRESHOLD,
   GATE_CATEGORIES,
+  countReposByStatus,
   type GateRepo,
+  type RepoBranchStat,
   type RepoCategoryStat,
 } from '@/features/gate/data/gate'
 import { formatPercent } from '@/features/gate/lib/format'
 import { useLang, type I18nKey } from '@/lib/i18n'
 
 /**
- * Flat gate overview table (spec v1.9): repository · build / ready / merge /
- * daily / release pass-rate columns (value + mini bar) · coverage.
+ * Flat gate overview table (spec v1.9): repository (with branch picker) ·
+ * build / ready / merge / daily / release pass-rate pills · coverage.
  * Rows sort by clicking a column header (first click: desc for metrics,
- * asc for repository names); repositories without a category always sink.
+ * asc for repository names); branches without a category always sink.
  */
-const COL_LABEL: Record<string, I18nKey> = {
-  repo: 'gate.col.repo',
-  build: 'gate.col.build',
-  ready: 'gate.col.ready',
-  merge: 'gate.col.merge',
-  daily: 'gate.col.daily',
-  release: 'gate.col.release',
-  coverage: 'gate.col.coverage',
-}
-
 type SortKey =
   | 'repo'
   | 'build'
@@ -40,17 +46,29 @@ type SortDir = 'asc' | 'desc'
 const ROW_COLS =
   'grid grid-cols-[minmax(280px,1fr)_repeat(5,104px)_104px] items-center gap-x-2.5'
 
+const COL_LABEL: Record<string, I18nKey> = {
+  repo: 'gate.col.repo',
+  build: 'gate.col.build',
+  ready: 'gate.col.ready',
+  merge: 'gate.col.merge',
+  daily: 'gate.col.daily',
+  release: 'gate.col.release',
+  coverage: 'gate.col.coverage',
+}
+
 /** Sort value per column; null sinks to the bottom in both directions. */
-function sortValue(repo: GateRepo, key: SortKey): number | string | null {
+function sortValue(
+  repo: GateRepo,
+  branch: RepoBranchStat,
+  key: SortKey
+): number | string | null {
   switch (key) {
     case 'repo':
       return repo.name
     case 'coverage':
-      return repo.coverage
+      return branch.coverage
     default:
-      return (
-        repo.stats.find((s) => s.category === key)?.passRate7d ?? null
-      )
+      return branch.stats.find((s) => s.category === key)?.passRate7d ?? null
   }
 }
 
@@ -78,11 +96,58 @@ function CoverageCell({ coverage }: { coverage: number }) {
     <span
       className={cn(
         'flex h-7 items-center justify-center rounded-md text-[13px] font-medium tabular-nums',
-        low ? 'bg-gate-fail-soft text-gate-fail' : 'bg-gate-pass-soft text-gate-pass'
+        low
+          ? 'bg-gate-fail-soft text-gate-fail'
+          : 'bg-gate-pass-soft text-gate-pass'
       )}
     >
       {formatPercent(coverage)}
     </span>
+  )
+}
+
+/** Branch selector chip shown next to the repository name. */
+function BranchPicker({
+  repo,
+  selected,
+  onSelect,
+}: {
+  repo: GateRepo
+  selected: RepoBranchStat
+  onSelect: (branchName: string) => void
+}) {
+  const { t } = useLang()
+  return (
+    <DropdownMenu>
+      <DropdownMenuTrigger
+        aria-label={t('gate.switchBranch')}
+        title={t('gate.switchBranch')}
+        className='inline-flex h-5 max-w-32 shrink-0 items-center gap-1 rounded-md border border-gate-line bg-gate-track px-1.5 text-[11px] font-medium text-gate-dim outline-none hover:text-gate-ink focus-visible:ring-2 focus-visible:ring-gate-accent/30'
+      >
+        <GitBranch className='size-3 shrink-0' />
+        <span className='truncate'>{selected.name}</span>
+        <ChevronDown className='size-3 shrink-0' />
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align='start' className='min-w-44'>
+        <DropdownMenuLabel className='text-xs text-muted-foreground'>
+          {t('gate.branches')}
+        </DropdownMenuLabel>
+        {repo.branchData.map((b) => (
+          <DropdownMenuItem
+            key={b.name}
+            onClick={() => onSelect(b.name)}
+            className='gap-2 text-[12px] font-medium'
+          >
+            <GitBranch className='size-3.5 text-gate-faint' />
+            <span className='truncate'>{b.name}</span>
+            <Check
+              size={14}
+              className={cn('ms-auto', b.name !== selected.name && 'hidden')}
+            />
+          </DropdownMenuItem>
+        ))}
+      </DropdownMenuContent>
+    </DropdownMenu>
   )
 }
 
@@ -104,7 +169,7 @@ function SortHeader({
       type='button'
       onClick={onClick}
       className={cn(
-        'group flex items-center gap-1 text-left text-xs font-semibold tracking-[0.04em] uppercase outline-none focus-visible:ring-2 focus-visible:ring-gate-accent/30',
+        'group flex items-center gap-1 text-left text-[11px] font-semibold tracking-[0.06em] uppercase outline-none focus-visible:ring-2 focus-visible:ring-gate-accent/30',
         active ? 'text-gate-ink' : 'text-gate-faint hover:text-gate-dim'
       )}
     >
@@ -122,22 +187,30 @@ function SortHeader({
   )
 }
 
-export function RepoGateTable({
-  repos,
-  statusCounts,
-}: {
-  repos: GateRepo[]
-  statusCounts: { passed: number; failed: number; running: number }
-}) {
+export function RepoGateTable({ repos }: { repos: GateRepo[] }) {
   const { t } = useLang()
   const [sortKey, setSortKey] = useState<SortKey | null>(null)
   const [sortDir, setSortDir] = useState<SortDir>('desc')
+  /** Selected branch name per repo id; falls back to the default branch. */
+  const [branchByRepo, setBranchByRepo] = useState<Record<string, string>>({})
 
-  const sortedRepos = useMemo(() => {
-    if (!sortKey) return repos
-    const sorted = [...repos].sort((a, b) => {
-      const va = sortValue(a, sortKey)
-      const vb = sortValue(b, sortKey)
+  const branchOf = (repo: GateRepo): RepoBranchStat =>
+    repo.branchData.find((b) => b.name === branchByRepo[repo.id]) ??
+    repo.branchData[0]
+
+  /** Repo paired with its currently selected branch. */
+  const views = useMemo(
+    () => repos.map((repo) => ({ repo, branch: branchOf(repo) })),
+    // branchOf closes over branchByRepo; listing it keeps the view in sync.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [repos, branchByRepo]
+  )
+
+  const sortedViews = useMemo(() => {
+    if (!sortKey) return views
+    return [...views].sort((a, b) => {
+      const va = sortValue(a.repo, a.branch, sortKey)
+      const vb = sortValue(b.repo, b.branch, sortKey)
       if (va == null && vb == null) return 0
       if (va == null) return 1
       if (vb == null) return -1
@@ -146,8 +219,15 @@ export function RepoGateTable({
       }
       return sortDir === 'asc' ? va - vb : vb - va
     })
-    return sorted
-  }, [repos, sortKey, sortDir])
+  }, [views, sortKey, sortDir])
+
+  const statusCounts = useMemo(
+    () =>
+      countReposByStatus(
+        sortedViews.map((v) => ({ gateStatus: v.branch.gateStatus }))
+      ),
+    [sortedViews]
+  )
 
   const onSort = (key: SortKey) => {
     if (sortKey === key) {
@@ -186,7 +266,7 @@ export function RepoGateTable({
       </div>
 
       {/* Rows */}
-      {sortedRepos.map((repo) => (
+      {sortedViews.map(({ repo, branch }) => (
         <div
           key={repo.id}
           className={cn(
@@ -195,8 +275,17 @@ export function RepoGateTable({
           )}
         >
           <div className='min-w-0'>
-            <div className='truncate text-sm leading-5 font-semibold text-gate-ink'>
-              {repo.name}
+            <div className='flex min-w-0 items-center gap-1.5'>
+              <span className='truncate text-sm leading-5 font-semibold text-gate-ink'>
+                {repo.name}
+              </span>
+              <BranchPicker
+                repo={repo}
+                selected={branch}
+                onSelect={(name) =>
+                  setBranchByRepo((cur) => ({ ...cur, [repo.id]: name }))
+                }
+              />
             </div>
             <div className='truncate text-xs leading-4 text-gate-dim'>
               {repo.owner}
@@ -206,11 +295,11 @@ export function RepoGateTable({
           {GATE_CATEGORIES.map((c) => (
             <RateCell
               key={c.id}
-              stat={repo.stats.find((s) => s.category === c.id)}
+              stat={branch.stats.find((s) => s.category === c.id)}
             />
           ))}
 
-          <CoverageCell coverage={repo.coverage} />
+          <CoverageCell coverage={branch.coverage} />
         </div>
       ))}
 
