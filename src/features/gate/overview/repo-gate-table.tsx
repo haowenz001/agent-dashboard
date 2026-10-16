@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react'
 import { ArrowDown, ArrowUp, SearchX } from 'lucide-react'
 import { cn } from '@/lib/utils'
-import { TONE_BAR, TONE_TEXT } from '@/features/gate/components/gate-styles'
+import { TONE_BG, TONE_TEXT } from '@/features/gate/components/gate-styles'
 import {
   COVERAGE_THRESHOLD,
   GATE_CATEGORIES,
@@ -38,7 +38,7 @@ type SortKey =
 type SortDir = 'asc' | 'desc'
 
 const ROW_COLS =
-  'grid grid-cols-[minmax(220px,1fr)_repeat(5,140px)_140px] items-center gap-x-2.5'
+  'grid grid-cols-[minmax(280px,1fr)_repeat(5,104px)_104px] items-center gap-x-2.5'
 
 /** Sort value per column; null sinks to the bottom in both directions. */
 function sortValue(repo: GateRepo, key: SortKey): number | string | null {
@@ -54,52 +54,35 @@ function sortValue(repo: GateRepo, key: SortKey): number | string | null {
   }
 }
 
-/** Value (56px) + rounded mini bar (70px) per category column. */
+/** Pass rate as a soft status pill tinted by health tier. */
 function RateCell({ stat }: { stat?: RepoCategoryStat }) {
+  if (!stat) {
+    return <span className='text-sm text-gate-faint'>–</span>
+  }
   return (
-    <div className='flex items-center gap-2.5'>
-      <span
-        className={cn(
-          'w-14 shrink-0 text-sm font-medium tabular-nums',
-          stat ? TONE_TEXT[stat.health] : 'text-gate-faint'
-        )}
-      >
-        {stat ? formatPercent(stat.passRate7d) : '–'}
-      </span>
-      <span className='h-2 w-[70px] shrink-0 overflow-hidden rounded-full bg-gate-track'>
-        {stat && (
-          <span
-            className={cn('block h-full rounded-full', TONE_BAR[stat.health])}
-            style={{ width: `${stat.passRate7d}%` }}
-          />
-        )}
-      </span>
-    </div>
+    <span
+      className={cn(
+        'flex h-7 items-center justify-center rounded-md text-[13px] font-medium tabular-nums',
+        TONE_BG[stat.health],
+        TONE_TEXT[stat.health]
+      )}
+    >
+      {formatPercent(stat.passRate7d)}
+    </span>
   )
 }
 
 function CoverageCell({ coverage }: { coverage: number }) {
   const low = coverage < COVERAGE_THRESHOLD
   return (
-    <div className='flex items-center gap-2.5'>
-      <span
-        className={cn(
-          'w-14 shrink-0 text-sm font-medium tabular-nums',
-          low ? 'text-gate-fail' : 'text-gate-pass'
-        )}
-      >
-        {formatPercent(coverage)}
-      </span>
-      <span className='h-2 w-[70px] shrink-0 overflow-hidden rounded-full bg-gate-track'>
-        <span
-          className={cn(
-            'block h-full rounded-full',
-            low ? 'bg-gate-fail' : 'bg-gate-pass'
-          )}
-          style={{ width: `${coverage}%` }}
-        />
-      </span>
-    </div>
+    <span
+      className={cn(
+        'flex h-7 items-center justify-center rounded-md text-[13px] font-medium tabular-nums',
+        low ? 'bg-gate-fail-soft text-gate-fail' : 'bg-gate-pass-soft text-gate-pass'
+      )}
+    >
+      {formatPercent(coverage)}
+    </span>
   )
 }
 

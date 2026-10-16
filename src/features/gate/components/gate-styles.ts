@@ -14,6 +14,13 @@ export const TONE_BAR: Record<GateHealth, string> = {
   fail: 'bg-gate-fail',
 }
 
+/** Soft background tint per health tier, for status pills. */
+export const TONE_BG: Record<GateHealth, string> = {
+  pass: 'bg-gate-pass-soft',
+  warn: 'bg-gate-warn-soft',
+  fail: 'bg-gate-fail-soft',
+}
+
 export const CATEGORY_DOT: Record<GateCategory, string> = {
   build: 'bg-gate-cat-build',
   ready: 'bg-gate-cat-ready',
