@@ -26,7 +26,11 @@ type TeamSwitcherProps = {
 
 export function TeamSwitcher({ teams }: TeamSwitcherProps) {
   const { isMobile } = useSidebar()
-  const [activeTeam, setActiveTeam] = React.useState(teams[0])
+  // Track the selection by index so the rendered name/plan always derives
+  // from the current `teams` prop (e.g. re-translated on language switch)
+  // instead of a stale object captured at mount time.
+  const [activeIndex, setActiveIndex] = React.useState(0)
+  const activeTeam = teams[activeIndex] ?? teams[0]
 
   return (
     <SidebarMenu>
@@ -61,7 +65,7 @@ export function TeamSwitcher({ teams }: TeamSwitcherProps) {
             {teams.map((team, index) => (
               <DropdownMenuItem
                 key={team.name}
-                onClick={() => setActiveTeam(team)}
+                onClick={() => setActiveIndex(index)}
                 className='gap-2 p-2'
               >
                 <div className='flex size-6 items-center justify-center rounded-sm border'>
