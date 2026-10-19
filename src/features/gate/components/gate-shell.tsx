@@ -1,4 +1,3 @@
-import { useState } from 'react'
 import { Outlet } from '@tanstack/react-router'
 import { Bell, ChevronDown, Search, ShieldCheck } from 'lucide-react'
 import {
@@ -24,9 +23,10 @@ import { GATE_NAV_ITEMS } from '@/features/gate/components/nav-data'
 import { GateThemeSwitch } from '@/features/gate/components/gate-theme-switch'
 import { GateLanguageSwitch } from '@/features/gate/components/gate-language-switch'
 import { useGateSearch } from '@/features/gate/stores/gate-search'
+import { useGateWindow, WINDOW_OPTIONS } from '@/features/gate/stores/gate-window'
 import { useLang } from '@/lib/i18n'
 
-const TIME_RANGES = ['timeRange.24h', 'timeRange.7d', 'timeRange.30d'] as const
+
 
 /**
  * Merged app shell, modeled on the community-ecosystem monitor: shadcn
@@ -84,9 +84,8 @@ function GateTopbar() {
   const query = useGateSearch((s) => s.query)
   const setQuery = useGateSearch((s) => s.setQuery)
   const { t } = useLang()
-  const [timeRange, setTimeRange] = useState<(typeof TIME_RANGES)[number]>(
-    'timeRange.7d'
-  )
+  const windowDays = useGateWindow((s) => s.windowDays)
+  const setWindowDays = useGateWindow((s) => s.setWindowDays)
 
   return (
     <header className='sticky top-0 z-20 flex h-16 shrink-0 items-center gap-2.5 border-b border-gate-line/50 bg-gate-canvas/85 px-4 backdrop-blur'>
@@ -105,17 +104,20 @@ function GateTopbar() {
 
       <DropdownMenu>
         <DropdownMenuTrigger className='flex h-9 items-center gap-1.5 rounded-lg border border-gate-line bg-gate-card px-3 text-[12px] font-medium text-gate-ink outline-none focus-visible:ring-2 focus-visible:ring-gate-accent/30'>
-          {t(timeRange)}
+          {t(
+            WINDOW_OPTIONS.find((o) => o.days === windowDays)?.labelKey ??
+              'timeRange.7d'
+          )}
           <ChevronDown className='size-3.5 text-gate-faint' />
         </DropdownMenuTrigger>
         <DropdownMenuContent align='end' className='min-w-36'>
-          {TIME_RANGES.map((range) => (
+          {WINDOW_OPTIONS.map((option) => (
             <DropdownMenuItem
-              key={range}
-              onClick={() => setTimeRange(range)}
+              key={option.days}
+              onClick={() => setWindowDays(option.days)}
               className='text-[12px]'
             >
-              {t(range)}
+              {t(option.labelKey)}
             </DropdownMenuItem>
           ))}
         </DropdownMenuContent>

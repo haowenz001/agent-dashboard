@@ -1,18 +1,21 @@
 import { useMemo } from 'react'
 import { GATE_REPOS } from '@/features/gate/data/gate'
-import { useGateRepos } from '@/features/gate/data/gate-api'
+import { deriveGateRepos, useGateDatasets } from '@/features/gate/data/gate-api'
 import { RepoGateTable } from '@/features/gate/overview/repo-gate-table'
 import { useGateSearch } from '@/features/gate/stores/gate-search'
 import { useLang } from '@/lib/i18n'
+import { GateWindowSelect } from '@/features/gate/components/gate-window-select'
+import { useGateWindow } from '@/features/gate/stores/gate-window'
 
 export function GateOverview() {
   const query = useGateSearch((s) => s.query)
   const { t } = useLang()
-  const { data: collectedRepos } = useGateRepos()
+  const { data: datasets } = useGateDatasets()
+  const windowDays = useGateWindow((s) => s.windowDays)
 
   /** Collected datasets win; demo entries fill repositories without one. */
   const allRepos = useMemo(() => {
-    const collected = collectedRepos ?? []
+    const collected = deriveGateRepos(datasets ?? [], windowDays)
     const collectedIds = new Set(collected.map((repo) => repo.id))
     return [
       ...collected,
@@ -21,7 +24,7 @@ export function GateOverview() {
         demo: true,
       })),
     ]
-  }, [collectedRepos])
+  }, [datasets, windowDays])
 
   const visibleRepos = useMemo(() => {
     const q = query.trim().toLowerCase()
@@ -33,11 +36,12 @@ export function GateOverview() {
 
   return (
     <div className='flex flex-col gap-5'>
-      <div>
+      <div className='flex flex-wrap items-center gap-x-2 gap-y-1'>
         <h1 className='text-2xl font-bold tracking-tight text-gate-ink'>
           {t('gate.title')}
         </h1>
-        <p className='mt-1 text-sm text-gate-dim'>{t('gate.subtitle')}</p>
+        <p className='text-sm text-gate-dim'>{t('gate.subtitle')}</p>
+        <GateWindowSelect />
       </div>
 
       <RepoGateTable repos={visibleRepos} />
