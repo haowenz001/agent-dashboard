@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-10-19T06:55:55.706Z",
+  "generatedAt": "2026-10-19T07:44:56.171Z",
   "windowDays": 30,
   "sources": [
     {
@@ -8,7 +8,8 @@
       "owner": "openJiuwen-ai",
       "file": "openJiuwen-ai/sciencediscovery.json",
       "sourceUrl": "https://sciencediscovery.github.io/github-status-board/data/snapshot.json",
-      "windowDays": 30
+      "windowDays": 30,
+      "stale": true
     }
   ]
 }
