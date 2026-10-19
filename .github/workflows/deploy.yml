@@ -45,6 +45,11 @@ jobs:
           MONITOR_MAX_LIST_PAGES: '40'
         run: pnpm run collect
 
+      - name: Refresh gate data
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: pnpm run collect:gate
+
       - name: Build static site
         # Relative base keeps assets and ./data/*.json working both for
         # project pages (/<repo>/) and for a <user>.github.io root site.
